@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ImageBackground,
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -14,35 +15,44 @@ import FeatureGrid from '../components/FeatureGrid';
 import MilestoneCard from '../components/MilestoneCard';
 import SeasonRewindCard from '../components/SeasonRewindCard';
 import FooterSection from '../components/FooterSection';
+import AppBackground from '../components/AppBackground';
+//import MusicButton from '../components/MusicButton';
 
 export default function HomeScreen() {
    const navigation: any = useNavigation();
-  return (
-    <ScrollView
-  style={styles.container}
-  contentContainerStyle={styles.content}
+return (
+  <ImageBackground
+  source={require('../../assets/images/HHS-BG.png')}
+  style={{ flex: 1 }}
+  resizeMode="cover"
 >
+  <View
+    style={{
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.45)',
+    }}
+  >
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+    >
       <HeroSection />
-
       <AboutSection />
-
       <FeatureGrid />
-
       <MilestoneCard />
-
       <SeasonRewindCard />
-
       <FooterSection />
-
-
+      {/*<MusicButton />*/}
     </ScrollView>
-  );
+    </View>
+  </ImageBackground>
+);
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090B12',
+    backgroundColor: 'transparent',
     paddingTop: 80,
     paddingHorizontal: 20,
   },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,11 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import ImageViewerModal from './ImageViewerModal';
 
 export default function SeasonRewindCard() {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<any>(null);
     const navigation: any = useNavigation();
   return (
     <View style={styles.container}>
@@ -34,23 +37,33 @@ export default function SeasonRewindCard() {
     Latest Season Rewind summary, Guild rank, streaks, and how HighHeavenSect placed in league play.
       </Text>
 
-      <Image
-      source={require('../../assets/images/league_rewind.png')}
-      style={styles.rewindImage}
-      />
+    <TouchableOpacity
+                  onPress={() => {
+                  setSelectedImage(require('../../assets/images/league_rewind.png')
+                  );
+                  setModalVisible(true);
+    }}>
+    <Image
+          source={require('../../assets/images/league_rewind.png')}
+          style={styles.rewindImage}
+    />
+    </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>
-          Iron Triangle Trio
-      </Text>
+    <TouchableOpacity
+                  onPress={() => {
+                  setSelectedImage(require('../../assets/images/iron_triangle.png')
+                  );
+                  setModalVisible(true);
+    }}>
+    <Image
+          source={require('../../assets/images/iron_triangle.png')}
+          style={styles.rewindImage}
+    />
+    </TouchableOpacity>
 
       <Text style={styles.sectionDescription}>
     Top performers in damage, tanking pressure, and healing, The carries who shaped our season rewind.
       </Text>
-
-      <Image
-      source={require('../../assets/images/iron_triangle.png')}
-      style={styles.rewindImage}
-      />
 
      <TouchableOpacity
       style={styles.button}
@@ -60,6 +73,13 @@ export default function SeasonRewindCard() {
           View Rewind
         </Text>
       </TouchableOpacity>
+      
+      <ImageViewerModal
+                       visible={modalVisible}
+                       imageSource={selectedImage}
+                       onClose={() => setModalVisible(false)}
+      />
+    
     </View>
   );
 }
@@ -128,6 +148,7 @@ const styles = StyleSheet.create({
   width: '100%',
   height: 220,
   borderRadius: 16,
+  marginBottom: 30,
   },
 
 });

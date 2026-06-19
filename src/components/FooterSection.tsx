@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 
 export default function FooterSection() {
   return (
@@ -15,6 +21,21 @@ export default function FooterSection() {
       <Text style={styles.description}>
         Where Winds Meet • SEA Community
       </Text>
+
+      <TouchableOpacity
+        style={styles.discordButton}
+        onPress={() =>
+          Linking.openURL('https://discord.com/invite/erogetof')
+        }
+      >
+        <Text style={styles.discordTitle}>
+          JOIN US ON DISCORD
+        </Text>
+
+        <Text style={styles.discordLink}>
+          discord.gg/erogetof
+        </Text>
+      </TouchableOpacity>
 
       <Text style={styles.copyright}>
         © High Heaven Sect
@@ -44,6 +65,28 @@ const styles = StyleSheet.create({
   description: {
     color: '#B0B0B0',
     marginTop: 15,
+  },
+
+  discordButton: {
+    marginTop: 25,
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    alignItems: 'center',
+  },
+
+  discordTitle: {
+    color: '#F3E5EC',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+
+  discordLink: {
+    color: '#D9D9D9',
+    marginTop: 6,
+    fontSize: 14,
   },
 
   copyright: {

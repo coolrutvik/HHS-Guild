@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import ImageViewerModal from './ImageViewerModal';
 
 export default function HeroSection() {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={styles.container}>
       <Text style={styles.smallTitle}>
@@ -40,10 +42,24 @@ export default function HeroSection() {
           Join Discord Now
         </Text>
       </TouchableOpacity>
+      
+      <TouchableOpacity
+       onPress={() => setModalVisible(true)}
+      >
+      
       <Image
-            source={require('../../assets/images/guild_showcase.png')}
-            style={styles.guildImage}
+         source={require('../../assets/images/guild_showcase.png')}
+         style={styles.guildImage}
       />
+
+      </TouchableOpacity>
+      
+      <ImageViewerModal
+         visible={modalVisible}
+         imageSource={require('../../assets/images/guild_showcase.png')}
+         onClose={() => setModalVisible(false)}
+      />
+
     </View>
   );
 }
