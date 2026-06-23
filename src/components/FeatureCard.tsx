@@ -38,18 +38,20 @@ export default function FeatureCard({
 
 const styles = StyleSheet.create({
   card: {
-    width: '48%',
-    backgroundColor: '#171B27',
-    borderRadius: 16,
-    paddingVertical: 30,
-    marginBottom: 15,
-    alignItems: 'center',
-  },
+  width: '48%',
+  backgroundColor: 'rgba(20,20,25,0.45)',
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.25)',
+  borderRadius: 20,
+  paddingVertical: 30,
+  marginBottom: 15,
+  alignItems: 'center',
+},
 
   cardText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 16,
-    marginTop: 10,
-  },
+  color: '#F3E5EC',
+  fontWeight: '700',
+  fontSize: 16,
+  marginTop: 10,
+},
 });

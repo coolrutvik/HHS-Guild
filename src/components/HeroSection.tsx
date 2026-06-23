@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Linking,
 } from 'react-native';
 import ImageViewerModal from './ImageViewerModal';
 
@@ -37,10 +38,15 @@ export default function HeroSection() {
         but no cultivator walks it alone.
       </Text>
 
-      <TouchableOpacity style={styles.discordButton}>
-        <Text style={styles.buttonText}>
-          Join Discord Now
-        </Text>
+      <TouchableOpacity style={styles.discordButton}
+         onPress={() =>
+                  Linking.openURL('https://discord.com/invite/erogetof')
+                }
+      >
+      <Text style={styles.buttonText}>
+                JOIN US ON DISCORD
+      </Text>
+
       </TouchableOpacity>
       
       <TouchableOpacity
@@ -71,7 +77,7 @@ const styles = StyleSheet.create({
   },
 
   smallTitle: {
-    color: '#D9A7BC',
+    color: '#E8C8D6',
     fontSize: 16,
     marginBottom: 10,
   },
@@ -84,7 +90,7 @@ const styles = StyleSheet.create({
 },
 
   subtitle: {
-    color: '#C7C7C7',
+    color: '#F3E5EC',
     fontSize: 18,
     marginTop: 20,
     lineHeight: 28,
@@ -92,7 +98,7 @@ const styles = StyleSheet.create({
 
   discordButton: {
     marginTop: 25,
-    backgroundColor: '#D9A7BC',
+    backgroundColor: '#E3B9CB',
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 12,
@@ -107,7 +113,7 @@ const styles = StyleSheet.create({
 },
 
   buttonText: {
-    color: '#000',
+    color: '#1F1F1F',
     fontWeight: '600',
   },
 });

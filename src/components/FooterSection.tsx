@@ -38,7 +38,7 @@ export default function FooterSection() {
       </TouchableOpacity>
 
       <Text style={styles.copyright}>
-        © High Heaven Sect
+        © HHS | Where Winds Meet • SEA | All Rights Reserved 
       </Text>
     </View>
   );
@@ -52,18 +52,18 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: '#F3E5EC',
+    color: '#c15189',
     fontSize: 24,
     fontWeight: 'bold',
   },
 
   subtitle: {
-    color: '#D9A7BC',
+    color: '#636133',
     marginTop: 8,
   },
 
   description: {
-    color: '#B0B0B0',
+    color: '#636133',
     marginTop: 15,
   },
 
@@ -78,20 +78,20 @@ const styles = StyleSheet.create({
   },
 
   discordTitle: {
-    color: '#F3E5EC',
+    color: '#c15189',
     fontSize: 18,
     fontWeight: '600',
   },
 
   discordLink: {
-    color: '#D9D9D9',
+    color: '#12110a',
     marginTop: 6,
     fontSize: 14,
   },
 
   copyright: {
-    color: '#707070',
-    marginTop: 20,
+    color: '#9b3b3b',
+    marginTop: 23,
     fontSize: 12,
   },
 });

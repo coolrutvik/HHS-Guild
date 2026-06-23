@@ -22,15 +22,12 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: {
-            backgroundColor: '#090B12',
-          },
-          headerTintColor: '#fff',
-          contentStyle: {
-            backgroundColor: '#090B12',
-          },
-        }}
-      >
+        headerShown: false,
+        contentStyle: {
+        backgroundColor: '#090B12',
+       },
+     }}
+    >
         <Stack.Screen
           name="Home"
           component={HomeScreen}

@@ -17,6 +17,7 @@ import SeasonRewindCard from '../components/SeasonRewindCard';
 import FooterSection from '../components/FooterSection';
 import AppBackground from '../components/AppBackground';
 //import MusicButton from '../components/MusicButton';
+import HomeTabs from '../components/HomeTabs';
 
 export default function HomeScreen() {
    const navigation: any = useNavigation();
@@ -36,6 +37,7 @@ return (
       style={styles.container}
       contentContainerStyle={styles.content}
     >
+      <HomeTabs />
       <HeroSection />
       <AboutSection />
       <FeatureGrid />
@@ -43,6 +45,7 @@ return (
       <SeasonRewindCard />
       <FooterSection />
       {/*<MusicButton />*/}
+      
     </ScrollView>
     </View>
   </ImageBackground>
@@ -53,7 +56,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    paddingTop: 80,
+    paddingTop: 50,
     paddingHorizontal: 20,
   },
 
