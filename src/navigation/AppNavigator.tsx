@@ -14,6 +14,7 @@ import ScheduleScreen from '../screens/ScheduleScreen';
 import QuizzesScreen from '../screens/QuizzesScreen';
 import GiveawaysScreen from '../screens/GiveawaysScreen';
 import GalleryScreen from '../screens/GalleryScreen';
+import QuizRoomScreen from '../screens/QuizRoomScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -67,6 +68,11 @@ export default function AppNavigator() {
           name="Quizzes"
           component={QuizzesScreen}
         />
+
+        <Stack.Screen
+           name="QuizRoom"
+           component={QuizRoomScreen}
+        /> 
 
         <Stack.Screen
           name="Giveaways"
