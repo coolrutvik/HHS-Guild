@@ -16,11 +16,16 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "googleServicesFile": "./android/app/google-services.json",
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.HHSAPP"
+      "package": "com.highheavensect.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font",
+      "@react-native-firebase/app"
+    ]
   }
 }
