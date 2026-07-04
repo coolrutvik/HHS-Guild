@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "118020723495",
+    "project_id": "hhs-app-eee5a",
+    "storage_bucket": "hhs-app-eee5a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118020723495:android:2b8ed07a9500b809258f02",
+        "android_client_info": {
+          "package_name": "com.highheavensect.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNO68ENueby4AvjRWApJ-ys3Y9k8AcS0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

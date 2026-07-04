@@ -9,17 +9,17 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "googleServicesFile": "./android/app/google-services.json",
-      "predictiveBackGestureEnabled": false,
-      "package": "com.highheavensect.app"
-    },
+   "android": {
+  "adaptiveIcon": {
+    "backgroundColor": "#E6F4FE",
+    "foregroundImage": "./assets/android-icon-foreground.png",
+    "backgroundImage": "./assets/android-icon-background.png",
+    "monochromeImage": "./assets/android-icon-monochrome.png"
+  },
+  "googleServicesFile": "./google-services.json",
+  "predictiveBackGestureEnabled": false,
+  "package": "com.highheavensect.app"
+},
     "web": {
       "favicon": "./assets/favicon.png"
     },
