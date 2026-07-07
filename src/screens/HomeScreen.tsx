@@ -7,6 +7,7 @@ import {
   ImageBackground,
   ScrollView,
 } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
 import FeatureCard from '../components/FeatureCard';
 import HeroSection from '../components/HeroSection';
@@ -18,6 +19,8 @@ import FooterSection from '../components/FooterSection';
 import AppBackground from '../components/AppBackground';
 //import MusicButton from '../components/MusicButton';
 import HomeTabs from '../components/HomeTabs';
+import { Button } from 'react-native';
+import { signOut } from '../firebase/auth';
 
 export default function HomeScreen() {
    const navigation: any = useNavigation();
@@ -27,6 +30,7 @@ return (
   style={{ flex: 1 }}
   resizeMode="cover"
 >
+  
   <View
     style={{
       flex: 1,
@@ -37,6 +41,7 @@ return (
       style={styles.container}
       contentContainerStyle={styles.content}
     >
+      
       <HomeTabs />
       <HeroSection />
       <AboutSection />
@@ -44,6 +49,12 @@ return (
       <MilestoneCard />
       <SeasonRewindCard />
       <FooterSection />
+      <Button
+  title="Logout"
+  onPress={async () => {
+    await signOut();
+  }}
+/>
       {/*<MusicButton />*/}
       
     </ScrollView>
