@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import React, { useEffect } from 'react';
+import auth from '@react-native-firebase/auth';
 
+import { useAuth } from '../context/AuthContext';
 import AuthNavigator from './AuthNavigator';
 import AppNavigator from './AppNavigator';
 
@@ -11,23 +12,28 @@ import { getUserProfile } from '../firebase/auth';
 type AuthStatus = 'approved' | 'pending' | 'blocked' | 'loading';
 
 export default function AuthGate() {
-  const [user, setUser] =
-    useState<FirebaseAuthTypes.User | null>(null);
-
-  const [status, setStatus] =
-    useState<AuthStatus>('loading');
+  const {
+  user,
+  setUser,
+  profile,
+  setProfile,
+  status,
+  setStatus,
+} = useAuth();
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(async currentUser => {
 
-      if (!currentUser) {
-        setUser(null);
-        setStatus('blocked'); // Any non-loading value is fine
-        return;
-      }
+     if (!currentUser) {
+         setUser(null);
+         setProfile(null);
+         setStatus('blocked');
+         return;
+    }
 
       try {
         const profile = await getUserProfile(currentUser.uid);
+        setProfile(profile as any);
 
         console.log('Firebase User:', currentUser.email);
         console.log('Firestore Profile:', profile);

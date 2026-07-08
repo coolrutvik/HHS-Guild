@@ -7,18 +7,27 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const features = [
-  'Schedule',
-  'Quizzes',
-  'Giveaways',
-  'Members',
-  'Recruitment',
-  'Leadership',
-  'Gallery',
-];
+import { useAuth } from '../context/AuthContext';
+import { canAccessAdminPanel } from '../utils/permissions';
+
 
 export default function FeatureGrid() {
     const navigation: any = useNavigation();
+    const { profile } = useAuth();
+
+    const features = [
+                     'Schedule',
+                     'Quizzes',
+                     'Giveaways',
+                     'Members',
+                     'Recruitment',
+                     'Leadership',
+                     'Gallery',
+                     ];
+
+if (canAccessAdminPanel(profile?.guildRole)) {
+  features.push('Admin Panel');
+}
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -57,6 +66,10 @@ export default function FeatureGrid() {
 
   if (feature === 'Gallery') {
     navigation.navigate('Gallery');
+  }
+
+  if (feature === 'Admin Panel') {
+    navigation.navigate('AdminPanel');
   }
 }}
 >
