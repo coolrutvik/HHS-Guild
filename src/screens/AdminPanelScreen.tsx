@@ -7,20 +7,45 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
+import RoleSelectionModal from '../components/RoleSelectionModal';
 
 import {
   getPendingUsers,
+  getApprovedUsers,
+  getBlockedUsers,
   approveUser,
   blockUser,
+  unblockUser,
+  updateGuildRole,
+  viceLeaderExists,
 } from '../firebase/users';
 
 export default function AdminPanelScreen() {
+  const [roleModalVisible, setRoleModalVisible] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [selectedRole, setSelectedRole] = useState('');
+
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
+  const [approvedUsers, setApprovedUsers] = useState<any[]>([]);
+  const [blockedUsers, setBlockedUsers] = useState<any[]>([]);
+  const [selectedTab, setSelectedTab] = useState<
+  'pending' | 'approved' | 'blocked'
+>('pending');
   const [loading, setLoading] = useState(true);
+  const { profile } = useAuth();
 
   useEffect(() => {
-    loadPendingUsers();
-  }, []);
+   loadAllUsers();
+}, []);
+
+  const loadAllUsers = async () => {
+    await Promise.all([
+      loadPendingUsers(),
+      loadApprovedUsers(),
+      loadBlockedUsers(),
+    ]);
+  };
 
   const loadPendingUsers = async () => {
     try {
@@ -33,6 +58,22 @@ export default function AdminPanelScreen() {
     }
   };
 
+  const loadApprovedUsers = async () => {
+  const users = await getApprovedUsers();
+
+  setApprovedUsers(users);
+
+  console.log('Approved Users:', users);
+};
+
+const loadBlockedUsers = async () => {
+  const users = await getBlockedUsers();
+
+  setBlockedUsers(users);
+
+  console.log('Blocked Users:', users);
+};
+
   const handleApprove = async (uid: string) => {
     await approveUser(uid);
 
@@ -41,19 +82,149 @@ export default function AdminPanelScreen() {
       'Member has been approved.'
     );
 
-    loadPendingUsers();
+    loadAllUsers();
   };
 
-  const handleBlock = async (uid: string) => {
-    await blockUser(uid);
+  const handleBlock = async (
+  uid: string,
+  nickname: string
+) => {
+  Alert.alert(
+    'Block Member',
+    `${nickname} won't be able to log in until unblocked.`,
+    [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Block',
+        style: 'destructive',
+        onPress: async () => {
+          await blockUser(uid);
 
+          Alert.alert(
+            'Success',
+            `${nickname} has been blocked.`
+          );
+
+          loadAllUsers();
+        },
+      },
+    ]
+  );
+};
+
+  const handleUnblock = async (uid: string) => {
+  await unblockUser(uid);
+
+  Alert.alert(
+    'Success',
+    'Member has been unblocked.'
+  );
+
+  loadAllUsers();
+};
+
+  const handleRoleChange = (item: any) => {
+  // Prevent the current Leader from changing their own role
+  if (
+    profile?.email === item.email &&
+    profile?.guildRole === 'Leader'
+  ) {
     Alert.alert(
-      'Blocked',
-      'Member has been blocked.'
-    );
+  'Change Guild Role',
+  `Select a new role for ${item.nickname}`,
+  [
+    {
+      text: 'Vice-Leader',
+      onPress: async () => {
+        const exists = await viceLeaderExists();
 
-    loadPendingUsers();
-  };
+        if (exists) {
+          Alert.alert(
+            'Vice-Leader Already Exists',
+            'Only one Vice-Leader is allowed.'
+          );
+          return;
+        }
+
+        await updateGuildRole(item.id, 'Vice-Leader');
+        loadAllUsers();
+      },
+    },
+    {
+      text: 'Officer',
+      onPress: async () => {
+        await updateGuildRole(item.id, 'Officer');
+        loadAllUsers();
+      },
+    },
+    {
+      text: 'Member',
+      onPress: async () => {
+        await updateGuildRole(item.id, 'Member');
+        loadAllUsers();
+      },
+    },
+    {
+      text: 'Cancel',
+      style: 'cancel',
+    },
+  ]
+);
+    return;
+  }
+
+  Alert.alert(
+    'Change Guild Role',
+    `Select a new role for ${item.nickname}`,
+    [
+      {
+  text: 'Vice-Leader',
+  onPress: async () => {
+    const exists = await viceLeaderExists();
+
+    if (exists) {
+      Alert.alert(
+        'Vice-Leader Already Exists',
+        'Only one Vice-Leader is allowed.'
+      );
+      return;
+    }
+
+    await updateGuildRole(item.id, 'Vice-Leader');
+    loadAllUsers();
+  },
+},
+      {
+        text: 'Officer',
+        onPress: async () => {
+          await updateGuildRole(item.id, 'Officer');
+          loadAllUsers();
+        },
+      },
+      {
+        text: 'Member',
+        onPress: async () => {
+          await updateGuildRole(item.id, 'Member');
+          loadAllUsers();
+        },
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ]
+  );
+};
+
+  const displayedUsers =
+  selectedTab === 'pending'
+    ? pendingUsers
+    : selectedTab === 'approved'
+    ? approvedUsers
+    : blockedUsers;
 
   return (
     <View style={styles.container}>
@@ -61,21 +232,63 @@ export default function AdminPanelScreen() {
         Admin Panel
       </Text>
 
-      <Text style={styles.sectionTitle}>
-        Pending Requests
+      <View style={styles.tabsContainer}>
+
+    <TouchableOpacity
+         style={[
+         styles.tab,
+         selectedTab === 'pending' &&
+         styles.activeTab,
+        ]}
+        onPress={() => setSelectedTab('pending')}
+    >
+      <Text style={styles.tabText}>
+             Pending
       </Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+         style={[
+         styles.tab,
+         selectedTab === 'approved' &&
+         styles.activeTab,
+        ]}
+        onPress={() => setSelectedTab('approved')}
+    >
+      <Text style={styles.tabText}>
+             Approved
+      </Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+       style={[
+       styles.tab,
+       selectedTab === 'blocked' &&
+       styles.activeTab,
+      ]}
+      onPress={() => setSelectedTab('blocked')}
+    >
+      <Text style={styles.tabText}>
+            Blocked
+      </Text>
+    </TouchableOpacity>
+</View>
 
       {loading ? (
         <Text style={styles.emptyText}>
           Loading...
         </Text>
-      ) : pendingUsers.length === 0 ? (
+      ) : displayedUsers.length === 0 ? (
         <Text style={styles.emptyText}>
-          No pending requests.
+          {selectedTab === 'pending'
+            ? 'No pending requests.'
+            : selectedTab === 'approved'
+            ? 'No approved members.'
+            : 'No blocked members.'}
         </Text>
       ) : (
         <FlatList
-          data={pendingUsers}
+          data={displayedUsers}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <View style={styles.card}>
@@ -91,35 +304,123 @@ export default function AdminPanelScreen() {
                 Role: {item.guildRole}
               </Text>
 
-              <View style={styles.buttonRow}>
+              {selectedTab === 'pending' && (
+               <View style={styles.buttonRow}>
                 <TouchableOpacity
-                  style={styles.approveButton}
-                  onPress={() =>
-                    handleApprove(item.id)
-                  }
+                   style={styles.approveButton}
+                   onPress={() => handleApprove(item.id)}
                 >
                   <Text style={styles.buttonText}>
-                    Approve
+                        Approve
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.blockButton}
+                   style={styles.blockButton}
                   onPress={() =>
-                    handleBlock(item.id)
+                    handleBlock(item.id, item.nickname)
                   }
                 >
                   <Text style={styles.buttonText}>
-                    Block
+                           Block
                   </Text>
                 </TouchableOpacity>
-              </View>
-            </View>
+           </View>
           )}
-        />
-      )}
-    </View>
+       {selectedTab === 'approved' && (
+  <View style={styles.buttonRow}>
+
+    <TouchableOpacity
+      style={styles.approveButton}
+      onPress={() => {
+        if (item.guildRole === 'Leader') {
+          Alert.alert(
+            'Action Not Allowed',
+            'The Leader role cannot be changed from the app.'
+          );
+          return;
+        }
+
+        setSelectedMember(item);
+        setSelectedRole(item.guildRole);
+        setRoleModalVisible(true);
+      }}
+    >
+      <Text style={styles.buttonText}>
+        Change Role
+      </Text>
+    </TouchableOpacity>
+
+    {item.guildRole !== 'Leader' && (
+  <TouchableOpacity
+    style={styles.blockButton}
+   onPress={() =>
+  handleBlock(item.id, item.nickname)
+}
+  >
+    <Text style={styles.buttonText}>
+      Block
+    </Text>
+  </TouchableOpacity>
+)}
+
+  </View>
+)}
+         {selectedTab === 'blocked' && (
+          <View style={styles.buttonRow}>
+           <TouchableOpacity
+             style={styles.approveButton}
+             onPress={() => handleUnblock(item.id)}
+           >
+            <Text style={styles.buttonText}>
+                   Unblock
+            </Text>
+           </TouchableOpacity>
+          </View>
+         )}
+        </View>
+       )}
+     />
+    )}
+    <RoleSelectionModal
+       visible={roleModalVisible}
+       nickname={selectedMember?.nickname ?? ''}
+       currentRole={selectedMember?.guildRole ?? ''}
+       selectedRole={selectedRole}
+       onSelectRole={setSelectedRole}
+       onCancel={() => {
+       setRoleModalVisible(false);
+    }}
+       onSave={async () => {
+  if (!selectedMember) return;
+
+  if (
+    selectedRole === 'Vice-Leader' &&
+    selectedMember.guildRole !== 'Vice-Leader'
+  ) {
+    const exists = await viceLeaderExists();
+
+    if (exists) {
+      Alert.alert(
+        'Vice-Leader Already Exists',
+        'Only one Vice-Leader is allowed.'
+      );
+      return;
+    }
+  }
+
+  await updateGuildRole(
+    selectedMember.id,
+    selectedRole
   );
+
+  await loadAllUsers();
+
+  setRoleModalVisible(false);
+}}
+    />
+  </View>
+ );
 }
 
 const styles = StyleSheet.create({
@@ -201,5 +502,28 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
+  },
+
+  tabsContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+
+  tab: {
+    flex: 1,
+    backgroundColor: '#171B27',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+
+  activeTab: {
+    backgroundColor: '#8B5CF6',
+  },
+
+  tabText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
