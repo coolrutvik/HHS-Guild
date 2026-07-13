@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,8 +9,15 @@ import {
 } from 'react-native';
 import AppBackground from '../components/AppBackground';
 import FooterSection from '../components/FooterSection';
+import { useAuth } from '../context/AuthContext';
+import { canAccessAdminPanel } from '../utils/permissions';
+import {
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
+import { subscribeToEvents } from '../firebase/events';
 
-const events = [
+const demoEvents = [
   {
     title: 'Guild Heroes Realm',
     Days: 'Mon, Wed, Sat, Sun (Sunday optional)',
@@ -44,6 +51,22 @@ const events = [
 ];
 
 export default function ScheduleScreen() {
+  const { profile } = useAuth();
+  const navigation: any = useNavigation();
+
+  const [events, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+  const unsubscribe = subscribeToEvents(data => {
+    console.log('Realtime Events:', data);
+
+    setEvents(data);
+  });
+
+  return unsubscribe;
+}, []);
+
+
   return (
     <AppBackground>
     <ScrollView
@@ -65,7 +88,17 @@ export default function ScheduleScreen() {
       </Text>
     </View>
 
-      {events.map(event => (
+{canAccessAdminPanel(profile?.guildRole) && (
+  <TouchableOpacity
+    style={styles.addButton}
+    onPress={() => navigation.navigate('AddEvent')}
+  >
+    <Text style={styles.addButtonText}>
+      + Add Guild Event
+    </Text>
+  </TouchableOpacity>
+)}
+      {(events.length > 0 ? events : demoEvents).map((event: any) => (
         <View
           key={event.title}
           style={styles.eventCard}
@@ -75,16 +108,16 @@ export default function ScheduleScreen() {
           </Text>
 
           <Text style={styles.eventDays}>
-            📅 {event.Days}
-          </Text>
+  📅 {event.Days ?? event.date}
+</Text>
 
           <Text style={styles.eventTime}>
-            🕒 {event.Time}
-          </Text>
+  🕒 {event.Time ?? event.time}
+</Text>
 
-          <Text style={styles.eventDesc}>
-            {event.Desc}
-          </Text>
+         <Text style={styles.eventDesc}>
+  {event.Desc ?? event.description}
+</Text>
         </View>
       ))}
    <FooterSection />
@@ -206,5 +239,19 @@ discordLink: {
   color: '#f6d2d2',
   marginTop: 12,
   lineHeight: 22,
+},
+
+addButton: {
+  backgroundColor: '#8B5CF6',
+  paddingVertical: 14,
+  borderRadius: 14,
+  alignItems: 'center',
+  marginBottom: 20,
+},
+
+addButtonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
 },
 });

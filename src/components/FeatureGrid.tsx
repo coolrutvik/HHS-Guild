@@ -16,6 +16,7 @@ export default function FeatureGrid() {
     const { profile } = useAuth();
 
     const features = [
+                     'Profile',
                      'Schedule',
                      'Quizzes',
                      'Giveaways',
@@ -70,6 +71,10 @@ if (canAccessAdminPanel(profile?.guildRole)) {
 
   if (feature === 'Admin Panel') {
     navigation.navigate('AdminPanel');
+  }
+
+  if (feature === 'Profile') {
+  navigation.navigate('Profile');
   }
 }}
 >

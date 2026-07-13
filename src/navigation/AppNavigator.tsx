@@ -15,6 +15,8 @@ import GiveawaysScreen from '../screens/GiveawaysScreen';
 import GalleryScreen from '../screens/GalleryScreen';
 import QuizRoomScreen from '../screens/QuizRoomScreen';
 import AdminPanelScreen from '../screens/AdminPanelScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import AddEventScreen from '../screens/AddEventScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -87,6 +89,16 @@ export default function AppNavigator() {
         <Stack.Screen
           name="AdminPanel"
           component={AdminPanelScreen}
+        />
+
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+        />
+
+        <Stack.Screen
+          name="AddEvent"
+          component={AddEventScreen}
         />
 
    </Stack.Navigator>
