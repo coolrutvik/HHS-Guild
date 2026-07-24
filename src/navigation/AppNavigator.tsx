@@ -17,6 +17,10 @@ import QuizRoomScreen from '../screens/QuizRoomScreen';
 import AdminPanelScreen from '../screens/AdminPanelScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AddEventScreen from '../screens/AddEventScreen';
+import AnnouncementScreen from '../screens/AnnouncementScreen';
+import AddAnnouncementScreen from '../screens/AddAnnouncementScreen';
+import QuizListScreen from '../screens/QuizListScreen';
+import QuizTypeScreen from '../screens/QuizTypeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -99,6 +103,28 @@ export default function AppNavigator() {
         <Stack.Screen
           name="AddEvent"
           component={AddEventScreen}
+        />
+
+        <Stack.Screen
+          name="Announcements"
+          component={AnnouncementScreen}
+        />
+
+        <Stack.Screen
+          name="AddAnnouncement"
+          component={AddAnnouncementScreen}
+        />
+
+        <Stack.Screen
+          name="QuizList"
+          component={QuizListScreen}
+          options={{ title: 'Quizzes' }}
+        />
+
+        <Stack.Screen
+          name="QuizType"
+          component={QuizTypeScreen}
+          options={{ title: 'Create Quiz' }}
         />
 
    </Stack.Navigator>

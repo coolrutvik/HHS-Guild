@@ -18,6 +18,7 @@ export default function FeatureGrid() {
     const features = [
                      'Profile',
                      'Schedule',
+                     'Announcements',
                      'Quizzes',
                      'Giveaways',
                      'Members',
@@ -55,6 +56,10 @@ if (canAccessAdminPanel(profile?.guildRole)) {
 
   if (feature === 'Schedule') {
     navigation.navigate('Schedule');
+  }
+
+  if (feature === 'Announcements') {
+    navigation.navigate('Announcements');
   }
 
   if (feature === 'Quizzes') {
