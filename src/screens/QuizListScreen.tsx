@@ -7,17 +7,27 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
 
 import { Quiz, subscribeToQuizzes } from '../firebase/quizzes';
+import QuizCard from '../components/QuizCard';
+import QuizHeader from '../components/QuizHeader';
+import AppBackground from '../components/AppBackground';
+import FooterSection from '../components/FooterSection';
 
-const QuizListScreen = () => {
+export default function QuizListScreen() {
   const navigation: any = useNavigation();
+
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('QuizListScreen mounted');
+
     const unsubscribe = subscribeToQuizzes((data) => {
+      console.log('QUIZZES:', data);
+
       setQuizzes(data);
       setLoading(false);
     });
@@ -28,77 +38,92 @@ const QuizListScreen = () => {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#FFFFFF" />
       </View>
     );
   }
 
-  if (quizzes.length === 0) {
-    return (
-      <View style={styles.center}>
-        <Text>No quizzes available.</Text>
-      </View>
-    );
-  }
-
- return (
-  <View style={styles.container}>
-    <TouchableOpacity
-      style={styles.createButton}
-      onPress={() => navigation.navigate('QuizType')}
-    >
-      <Text style={styles.createButtonText}>+ Create Quiz</Text>
-    </TouchableOpacity>
-
+return (
+  <AppBackground>
     <FlatList
+      contentContainerStyle={styles.content}
       data={quizzes}
       keyExtractor={(item) => item.id!}
-      renderItem={({ item }) => (
-        <View style={styles.quizItem}>
-          <Text style={styles.title}>{item.title}</Text>
+      ListHeaderComponent={<QuizHeader />}
+      ListFooterComponent={<FooterSection />}
+      ListEmptyComponent={
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyTitle}>
+            No quizzes available
+          </Text>
+
+          <Text style={styles.emptyDescription}>
+            Create your first quiz to get started.
+          </Text>
         </View>
+      }
+      renderItem={({ item }) => (
+        <QuizCard
+          quiz={item}
+          onPress={() =>
+            navigation.navigate('QuizRoom', {
+              quiz: item,
+            })
+          }
+        />
       )}
     />
-  </View>
+  </AppBackground>
 );
-};
-
-export default QuizListScreen;
+}
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  quizItem: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
   container: {
-    flex: 1,
-    backgroundColor: '#111827',
-  },
+  flex: 1,
+},
 
-  createButton: {
-    margin: 16,
-    backgroundColor: '#8B5CF6',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
+center: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 
-  createButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-  },
+content: {
+  paddingHorizontal: 20,
+  paddingTop: 30,
+  paddingBottom: 60,
+},
+
+emptyCard: {
+  marginTop: 10,
+
+  backgroundColor: 'rgba(15,15,20,0.75)',
+
+  borderRadius: 20,
+
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.15)',
+
+  paddingVertical: 45,
+  paddingHorizontal: 25,
+
+  alignItems: 'center',
+},
+
+emptyTitle: {
+  color: '#F3E5EC',
+  fontSize: 24,
+  fontWeight: 'bold',
+},
+
+emptyDescription: {
+  color: '#D9C7CF',
+  marginTop: 12,
+  textAlign: 'center',
+  fontSize: 16,
+  lineHeight: 24,
+},
+
+
+
 });

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
+
 import {
   View,
   Text,
@@ -6,12 +8,62 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 
+import {
+  hasUserAttemptedQuiz,
+  subscribeToLeaderboard,
+  QuizAttempt,
+} from '../firebase/quizzes';
+
+import { useNavigation } from '@react-navigation/native';
 import AppBackground from '../components/AppBackground';
 import FooterSection from '../components/FooterSection';
+import { getQuizQuestions } from '../firebase/quizzes';
+import { useAuth } from '../context/AuthContext';
 
 export default function QuizRoomScreen() {
+  const navigation: any = useNavigation();
+  const [username, setUsername] = useState('');
+  const [leaderboard, setLeaderboard] = useState<QuizAttempt[]>([]);
+  const route: any = useRoute();
+  const initialQuiz = route.params?.quiz;
+
+const [quiz, setQuiz] =
+  useState(initialQuiz);
+  
+  useEffect(() => {
+    console.log('Leaderboard quizId:', quiz.id);
+  if (!quiz?.id) {
+    return;
+  }
+
+  const unsubscribe = subscribeToLeaderboard(
+    quiz.id,
+    setLeaderboard
+  );
+
+  return unsubscribe;
+}, [quiz]);
+
+if (!quiz) {
+  return (
+    <AppBackground>
+      <ActivityIndicator
+        size="large"
+        color="#FBB7D9"
+        style={{ flex: 1 }}
+      />
+    </AppBackground>
+  );
+}
+
+  const { profile } = useAuth();
+  console.log('Logged in email:', profile?.email);
+  console.log('Quiz creator email:', quiz.createdByEmail);
+
   return (
     <AppBackground>
       <ScrollView style={styles.container}>
@@ -33,39 +85,33 @@ export default function QuizRoomScreen() {
         <View style={styles.leaderboardCard}>
 
   <Text style={styles.leaderboardTitle}>
-    🏆 FINAL LEADERBOARD
+    🏆 PAST LEADERBOARD
   </Text>
 
-  {[
-    ['#1', 'Salmon', '8243'],
-    ['#2', 'VAASANTH', '7525'],
-    ['#3', 'Linqi', '6486'],
-    ['#4', 'Lu', '4624'],
-    ['#5', 'Sirano', '3281'],
-    ['#6', 'Demonsau', '861'],
-    ['#7', 'Sylvely (Spectator)', '0'],
-  ].map(([rank, name, score]) => (
+  {leaderboard.map((item, index) => (
+  <View
+    key={item.id}
+    style={styles.leaderboardRow}
+  >
+    <Text style={styles.rankText}>
+      #{index + 1}
+    </Text>
 
-    <View
-      key={rank}
-      style={styles.leaderboardRow}
-    >
+    <Text style={styles.playerText}>
+      {item.nickname}
+    </Text>
 
-      <Text style={styles.rankText}>
-        {rank}
-      </Text>
+    <Text style={styles.scoreText}>
+      {item.score}/{item.totalQuestions}
+    </Text>
+  </View>
+))}
 
-      <Text style={styles.playerText}>
-        {name}
-      </Text>
-
-      <Text style={styles.scoreText}>
-        {score}
-      </Text>
-
-    </View>
-
-  ))}
+{leaderboard.length === 0 && (
+  <Text style={styles.playerText}>
+    No attempts yet.
+  </Text>
+)}
 
 </View>
 
@@ -80,20 +126,82 @@ export default function QuizRoomScreen() {
   </Text>
 
   <TextInput
-    style={styles.input}
-    placeholder="Enter Username"
-    placeholderTextColor="#8C8C8C"
-    editable={false}
-  />
+  style={styles.input}
+  placeholder="Enter Username"
+  placeholderTextColor="#8C8C8C"
+  value={username}
+  onChangeText={setUsername}
+/>
 
-  <TouchableOpacity
-    style={styles.lockedButton}
-    activeOpacity={1}
-  >
-    <Text style={styles.lockedButtonText}>
-      JOINING LOCKED
-    </Text>
-  </TouchableOpacity>
+<TouchableOpacity
+  style={styles.lockedButton}
+  activeOpacity={0.8}
+  onPress={async () => {
+    if (!username.trim()) {
+      Alert.alert(
+        'Username Required',
+        'Please enter your username.'
+      );
+      return;
+    }
+
+    try {
+      const email = profile?.email;
+
+if (!email) {
+  Alert.alert(
+    'Error',
+    'No email found.'
+  );
+  return;
+}
+
+const attempted =
+  await hasUserAttemptedQuiz(
+    quiz.id,
+    email
+  );
+
+if (attempted) {
+  Alert.alert(
+    'Quiz Already Attempted',
+    'You have already attempted this quiz.'
+  );
+  return;
+}
+
+      const questions = await getQuizQuestions(
+        quiz.id
+      );
+
+      if (questions.length === 0) {
+        Alert.alert(
+          'No Questions',
+          'This quiz has no questions yet.'
+        );
+        return;
+      }
+
+      navigation.navigate('QuestionPlayer', {
+        quiz,
+        username,
+        questions,
+      });
+
+    } catch (e) {
+      console.log(e);
+
+      Alert.alert(
+        'Error',
+        'Failed to load quiz questions.'
+      );
+    }
+  }}
+>
+  <Text style={styles.lockedButtonText}>
+    JOIN QUIZ
+  </Text>
+</TouchableOpacity>
 
   <Text style={styles.rankTextInfo}>
     Rank: — | No re-entry after start.

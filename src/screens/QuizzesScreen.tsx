@@ -55,7 +55,7 @@ export default function QuizzesScreen() {
 
   <TouchableOpacity
   style={styles.quizButton}
-  onPress={() => navigation.navigate('QuizRoom')}
+  onPress={() => navigation.navigate('QuizList')}
 >
     <Text style={styles.quizButtonText}>
       OPEN QUIZ ROOM

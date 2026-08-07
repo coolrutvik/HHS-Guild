@@ -1,12 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
 
-export interface QuizQuestion {
-  question: string;
-  options: string[];
-  correctAnswer: string;
-  order: number;
-}
-
 export interface Quiz {
   id?: string;
   title: string;
@@ -19,8 +12,27 @@ export interface Quiz {
   totalQuestions: number;
   createdByUid: string;
   createdByName: string;
+  createdByEmail: string;
   createdAt: Date;
   published: boolean;
+  secondsPerQuestion: number;
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  order: number;
+}
+
+export interface QuizAttempt {
+  id?: string;
+  quizId: string;
+  email: string;
+  nickname: string;
+  score: number;
+  totalQuestions: number;
+  submittedAt: any;
 }
 
 const db = firestore();
@@ -53,7 +65,10 @@ export const updateQuizQuestions = async (
       .collection('questions')
       .doc();
 
-    batch.set(docRef, question);
+    batch.set(docRef, {
+  ...question,
+  createdAt: firestore.FieldValue.serverTimestamp(),
+});
   });
 
   await batch.commit();
@@ -61,15 +76,33 @@ export const updateQuizQuestions = async (
 
 export const publishQuiz = async (
   quizId: string,
-  status: Quiz['status']
+  totalQuestions: number
 ) => {
   await db
     .collection('quizzes')
     .doc(quizId)
     .update({
       published: true,
-      status,
+      status: 'scheduled',
+      totalQuestions,
+      publishedAt: firestore.FieldValue.serverTimestamp(),
     });
+};
+
+export const getQuizQuestions = async (
+  quizId: string
+) => {
+  const snapshot = await db
+    .collection('quizzes')
+    .doc(quizId)
+    .collection('questions')
+    .orderBy('order')
+    .get();
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...(doc.data() as QuizQuestion),
+  }));
 };
 
 export const subscribeToQuizzes = (
@@ -90,17 +123,100 @@ export const subscribeToQuizzes = (
 
 export const submitQuizAttempt = async (
   quizId: string,
-  userId: string,
+  email: string,
   nickname: string,
   score: number,
   totalQuestions: number
 ) => {
   await db.collection('quizAttempts').add({
     quizId,
-    userId,
+    email,
     nickname,
     score,
     totalQuestions,
-    submittedAt: new Date().toISOString(),
+    submittedAt:  firestore.FieldValue.serverTimestamp(),
   });
+};
+
+export const hasUserAttemptedQuiz = async (
+  quizId: string,
+  email: string
+) => {
+  const snapshot = await db
+    .collection('quizAttempts')
+    .where('quizId', '==', quizId)
+    .where('email', '==', email)
+    .limit(1)
+    .get();
+
+  return !snapshot.empty;
+};
+
+export const subscribeToLeaderboard = (
+  quizId: string,
+  callback: (data: QuizAttempt[]) => void
+) => {
+  console.log('Querying leaderboard for quizId:', quizId);
+  return db
+    .collection('quizAttempts')
+    .where('quizId', '==', quizId)
+    .orderBy('score', 'desc')
+    .orderBy('submittedAt', 'asc')
+    .onSnapshot(
+      snapshot => {
+        if (!snapshot) {
+          callback([]);
+          return;
+        }
+
+        callback(
+          snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...(doc.data() as QuizAttempt),
+          }))
+        );
+      },
+      error => {
+        console.log('Leaderboard Error:', error);
+        callback([]);
+      }
+    );
+};
+
+export const startQuiz = async (quizId: string) => {
+  await db
+    .collection('quizzes')
+    .doc(quizId)
+    .update({
+      status: 'running',
+    });
+};
+
+export const endQuiz = async (quizId: string) => {
+  await db
+    .collection('quizzes')
+    .doc(quizId)
+    .update({
+      status: 'closed',
+    });
+};
+
+export const subscribeToQuiz = (
+  quizId: string,
+  callback: (quiz: Quiz | null) => void
+) => {
+  return db
+    .collection('quizzes')
+    .doc(quizId)
+    .onSnapshot(doc => {
+      if (!doc.exists) {
+        callback(null);
+        return;
+      }
+
+      callback({
+        id: doc.id,
+        ...(doc.data() as Quiz),
+      });
+    });
 };

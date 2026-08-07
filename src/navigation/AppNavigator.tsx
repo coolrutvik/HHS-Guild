@@ -10,17 +10,18 @@ import GuildWarScreen from '../screens/GuildWarScreen';
 import SeasonRewindScreen from '../screens/SeasonRewindScreen';
 
 import ScheduleScreen from '../screens/ScheduleScreen';
-import QuizzesScreen from '../screens/QuizzesScreen';
 import GiveawaysScreen from '../screens/GiveawaysScreen';
 import GalleryScreen from '../screens/GalleryScreen';
 import QuizRoomScreen from '../screens/QuizRoomScreen';
+import QuizDetailsScreen from '../screens/QuizDetailsScreen';
 import AdminPanelScreen from '../screens/AdminPanelScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AddEventScreen from '../screens/AddEventScreen';
 import AnnouncementScreen from '../screens/AnnouncementScreen';
 import AddAnnouncementScreen from '../screens/AddAnnouncementScreen';
 import QuizListScreen from '../screens/QuizListScreen';
-import QuizTypeScreen from '../screens/QuizTypeScreen';
+import QuestionBuilderScreen from '../screens/QuestionBuilderScreen';
+import QuestionPlayer from '../components/QuestionPlayer';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,13 +73,18 @@ export default function AppNavigator() {
 
         <Stack.Screen
           name="Quizzes"
-          component={QuizzesScreen}
+          component={QuizListScreen}
         />
 
         <Stack.Screen
            name="QuizRoom"
            component={QuizRoomScreen}
         /> 
+
+        <Stack.Screen
+          name="QuizDetails"
+          component={QuizDetailsScreen}
+        />
 
         <Stack.Screen
           name="Giveaways"
@@ -122,9 +128,13 @@ export default function AppNavigator() {
         />
 
         <Stack.Screen
-          name="QuizType"
-          component={QuizTypeScreen}
-          options={{ title: 'Create Quiz' }}
+          name="QuestionBuilder"
+          component={QuestionBuilderScreen}
+        />
+        
+        <Stack.Screen
+         name="QuestionPlayer"
+         component={QuestionPlayer}
         />
 
    </Stack.Navigator>
