@@ -9,9 +9,25 @@ export type UserStatus =
 
 type UserProfile = {
   email: string;
+
   nickname: string;
+
+  discordUsername?: string;
+
+  discordId?: string;
+
+  ign?: string;
+
   guildRole: string;
+
+  discordStatus?: 'Online' | 'Offline' | 'Idle' | 'DND';
+
+  avatarUrl?: string;
+
+  bio?: string;
+
   status: string;
+
   createdAt?: string;
 };
 

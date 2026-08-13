@@ -5,16 +5,22 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 
 import { useAuth } from '../context/AuthContext';
 import { signOut } from '../firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
      const { profile } = useAuth();
+     const navigation: any = useNavigation();
      console.log(profile);
   return (
-    <View style={styles.container}>
+     <ScrollView
+       contentContainerStyle={styles.container}
+       showsVerticalScrollIndicator={false}
+     >
 
       <Text style={styles.title}>
         Profile
@@ -64,6 +70,38 @@ export default function ProfileScreen() {
            {profile?.email}
         </Text>
 
+        <Text style={styles.label}>
+          Discord Username
+        </Text>
+
+        <Text style={styles.value}>
+           {profile?.discordUsername || '-'}
+        </Text>
+
+        <Text style={styles.label}>
+  Discord ID
+</Text>
+
+<Text style={styles.value}>
+  {profile?.discordId || '-'}
+</Text>
+
+<Text style={styles.label}>
+  In-Game Name
+</Text>
+
+<Text style={styles.value}>
+  {profile?.ign || '-'}
+</Text>
+
+        <Text style={styles.label}>
+           Bio
+        </Text>
+
+        <Text style={styles.value}>
+           {profile?.bio || '-'}
+        </Text>
+
         <Text style={styles.label}>Joined</Text>
          <Text style={styles.value}>
          {profile?.createdAt
@@ -78,6 +116,17 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity
+       style={styles.button}
+       onPress={() =>
+       navigation.navigate('EditProfile')
+       }
+      >
+      <Text style={styles.buttonText}>
+         Edit Profile
+      </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={styles.button}
         onPress={async () => {
         await signOut();
@@ -88,17 +137,17 @@ export default function ProfileScreen() {
         </Text>
       </TouchableOpacity>
 
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#090B12',
-    padding: 20,
-    alignItems: 'center',
-  },
+  backgroundColor: '#090B12',
+  padding: 20,
+  paddingBottom: 40,
+  alignItems: 'center',
+},
 
   title: {
     color: '#fff',

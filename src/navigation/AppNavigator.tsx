@@ -22,6 +22,7 @@ import AddAnnouncementScreen from '../screens/AddAnnouncementScreen';
 import QuizListScreen from '../screens/QuizListScreen';
 import QuestionBuilderScreen from '../screens/QuestionBuilderScreen';
 import QuestionPlayer from '../components/QuestionPlayer';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -135,6 +136,12 @@ export default function AppNavigator() {
         <Stack.Screen
          name="QuestionPlayer"
          component={QuestionPlayer}
+        />
+
+        <Stack.Screen
+         name="EditProfile"
+         component={EditProfileScreen}
+         options={{ title: 'Edit Profile' }}
         />
 
    </Stack.Navigator>

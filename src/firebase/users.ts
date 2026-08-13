@@ -94,3 +94,24 @@ export const viceLeaderExists = async () => {
 
   return !snapshot.empty;
 };
+
+
+export const updateProfile = async (
+  uid: string,
+  nickname: string,
+  discordUsername: string,
+  discordId: string,
+  ign: string,
+  bio: string
+) => {
+  await db
+    .collection('users')
+    .doc(uid)
+    .update({
+      nickname,
+      discordUsername,
+      discordId,
+      ign,
+      bio,
+    });
+};
